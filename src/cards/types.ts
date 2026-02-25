@@ -196,3 +196,23 @@ export type HeaderCardOptions = CommonOptions & {
   /** Largura personalizada. */
   card_width: number;
 };
+
+/**
+ * Opções para o card de Tech Stack.
+ */
+export type StackCardOptions = CommonOptions & {
+  /** Título principal do card. */
+  title: string;
+  /** Título da coluna esquerda. */
+  left_title: string;
+  /** Itens da coluna esquerda (separados por vírgula). */
+  left_items: string;
+  /** Título da coluna direita. */
+  right_title: string;
+  /** Itens da coluna direita (separados por vírgula). */
+  right_items: string;
+  /** Largura total do card. */
+  card_width: number;
+  /** Se `true`, oculta o título principal. */
+  hide_title: boolean;
+};
