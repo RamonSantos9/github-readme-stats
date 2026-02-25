@@ -85,8 +85,8 @@ const CACHE_TTL: {
     MAX: DURATIONS.TEN_DAY,
   },
   WAKATIME_CARD: {
-    DEFAULT: DURATIONS.ONE_DAY,
-    MIN: DURATIONS.TWELVE_HOURS,
+    DEFAULT: DURATIONS.FOUR_HOURS,
+    MIN: DURATIONS.TWO_HOURS,
     MAX: DURATIONS.TWO_DAY,
   },
   ERROR: DURATIONS.TEN_MINUTES,
@@ -173,7 +173,7 @@ const setCacheHeaders = (res: any, cacheSeconds: number): void => {
     "Cache-Control",
     `max-age=${cacheSeconds}, ` +
       `s-maxage=${cacheSeconds}, ` +
-      `stale-while-revalidate=${DURATIONS.ONE_DAY}`,
+      `stale-while-revalidate=${DURATIONS.TEN_MINUTES}`,
   );
 };
 
@@ -201,7 +201,7 @@ const setErrorCacheHeaders = (res: any): void => {
     "Cache-Control",
     `max-age=${CACHE_TTL.ERROR}, ` +
       `s-maxage=${CACHE_TTL.ERROR}, ` +
-      `stale-while-revalidate=${DURATIONS.ONE_DAY}`,
+      `stale-while-revalidate=${DURATIONS.TEN_MINUTES}`,
   );
 };
 

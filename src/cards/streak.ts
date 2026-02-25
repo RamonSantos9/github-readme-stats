@@ -14,7 +14,11 @@ import { streakCardLocales } from "../translations.js";
  * Formata um intervalo de datas para exibição curta.
  * Ex: "Feb 10 - Feb 25" ou "Dec 19, 2021 - Mar 14, 2022"
  */
-const formatDateRange = (startStr: string, endStr: string): string => {
+const formatDateRange = (
+  startStr: string,
+  endStr: string,
+  locale: string = "en",
+): string => {
   if (!startStr || !endStr) return "";
 
   const start = new Date(startStr);
@@ -31,11 +35,11 @@ const formatDateRange = (startStr: string, endStr: string): string => {
   };
 
   const startFormatted = start.toLocaleDateString(
-    "en-US",
+    locale,
     start.getFullYear() === now.getFullYear() ? options : yearOptions,
   );
   const endFormatted = end.toLocaleDateString(
-    "en-US",
+    locale,
     end.getFullYear() === now.getFullYear() ? options : yearOptions,
   );
 
@@ -192,7 +196,7 @@ const renderStreakCard = (
             <!-- Current Streak range -->
             <g transform="translate(${centers[1]}, 145)">
                 <text x="0" y="21" stroke-width="0" text-anchor="middle" fill="${textColor}" stroke-opacity="0.6" stroke="none" font-family="'${card.font_family}', sans-serif" font-weight="400" font-size="12px" font-style="normal" style="opacity: 0; animation: fadein 0.5s linear forwards 0.9s">
-                    ${formatDateRange(currentStreak.start, currentStreak.end)}
+                    ${formatDateRange(currentStreak.start, currentStreak.end, locale)}
                 </text>
             </g>
 
@@ -232,7 +236,7 @@ const renderStreakCard = (
             <!-- Longest Streak range -->
             <g transform="translate(${centers[2]}, 114)">
                 <text x="0" y="32" stroke-width="0" text-anchor="middle" fill="${textColor}" stroke-opacity="0.6" stroke="none" font-family="'${card.font_family}', sans-serif" font-weight="400" font-size="12px" font-style="normal" style="opacity: 0; animation: fadein 0.5s linear forwards 1.4s">
-                    ${formatDateRange(longestStreak.start, longestStreak.end)}
+                    ${formatDateRange(longestStreak.start, longestStreak.end, locale)}
                 </text>
             </g>
         </g>
