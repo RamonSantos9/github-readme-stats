@@ -22,7 +22,7 @@ const renderHeaderCard = (options: Partial<HeaderCardOptions> = {}): string => {
     align = "left",
     card_width,
     title_color,
-    bg_color,
+    bg_color = "00000000",
     theme,
     border_radius,
     border_color,
