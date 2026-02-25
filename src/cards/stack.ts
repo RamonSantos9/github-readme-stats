@@ -37,9 +37,9 @@ const renderPill = (text: string, color: string): string => {
   if (icon) {
     iconSvg = `<svg x="${paddingX}" y="${
       (height - iconSize) / 2
-    }" width="${iconSize}" height="${iconSize}" viewBox="0 0 16 16"><path fill="${
-      icon.color || color
-    }" d="${icon.path}" /></svg>`;
+    }" width="${iconSize}" height="${iconSize}" viewBox="${
+      icon.viewBox || "0 0 24 24"
+    }"><path fill="${icon.color || color}" d="${icon.path}" /></svg>`;
   }
 
   return `
