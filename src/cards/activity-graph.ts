@@ -49,15 +49,16 @@ const renderActivityGraph = (data: ActivityData, options: any = {}): string => {
     point_color,
     area_color,
     hide_area = false,
+    theme_line = true, // Nova opção interna para decidir se usa cor do tema ou laranja por padrão
   } = options;
 
   const width = parseInt(card_width, 10) || DEFAULT_WIDTH;
   const height = parseInt(card_height, 10) || DEFAULT_HEIGHT;
 
-  const paddingLeft = 60;
-  const paddingRight = 30;
-  const paddingTop = 70;
-  const paddingBottom = 60;
+  const paddingLeft = 70;
+  const paddingRight = 40;
+  const paddingTop = 80;
+  const paddingBottom = 70;
 
   const graphWidth = width - paddingLeft - paddingRight;
   const graphHeight = height - paddingTop - paddingBottom;
@@ -89,9 +90,8 @@ const renderActivityGraph = (data: ActivityData, options: any = {}): string => {
     1,
   );
 
-  // Arredonda o máximo para o próximo par para ter labels bonitos como na imagem
-  const yMax =
-    maxContributions % 2 === 0 ? maxContributions : maxContributions + 1;
+  // Escala o Y para ter um topo limpo (múltiplo de 5 ou 10)
+  const yMax = Math.ceil(maxContributions / 5) * 5 || 5;
 
   const points = recentContributions.map((day, i) => {
     const x = (i / (recentContributions.length - 1)) * graphWidth;
@@ -110,12 +110,16 @@ const renderActivityGraph = (data: ActivityData, options: any = {}): string => {
     .map((p) => `${p.x.toFixed(2)},${p.y.toFixed(2)}`)
     .join(" ");
 
-  const lineColorVal = line_color ? `#${line_color}` : "#FB8C00"; // Laranja padrão se não especificado
+  // Se o usuário passou line_color, usa ela. Senão, se quiser o look "clássico orange", usa orange. Senão usa a cor do tema.
+  // Como o usuário pediu para "temas se aplicarem", vou usar a cor do título por padrão se não for laranja.
+  const classicOrange = "#ff7a00";
+  const defaultLineColor = theme === "default" ? classicOrange : titleColor;
+  const lineColorVal = line_color ? `#${line_color}` : defaultLineColor;
   const pointColorVal = point_color ? `#${point_color}` : lineColorVal;
-  const areaColorVal = area_color ? `#${area_color}` : `${lineColorVal}22`;
+  const areaColorVal = area_color ? `#${area_color}` : `${lineColorVal}33`;
 
   // Grid Horizontal (Y-axis) e Labels
-  const yAxisSteps = 5; // Número de divisões
+  const yAxisSteps = 5;
   const yAxisLabels = [];
   for (let i = 0; i <= yAxisSteps; i++) {
     const level = i / yAxisSteps;
@@ -124,7 +128,7 @@ const renderActivityGraph = (data: ActivityData, options: any = {}): string => {
     yAxisLabels.push(`
       <g class="grid-line">
         <line x1="0" y1="${y}" x2="${graphWidth}" y2="${y}" stroke="${textColor}" stroke-opacity="0.1" stroke-dasharray="2,2" />
-        <text x="-10" y="${y + 4}" text-anchor="end" fill="${textColor}" fill-opacity="0.6" font-size="10">${count}</text>
+        <text x="-12" y="${y + 4}" text-anchor="end" fill="${textColor}" fill-opacity="0.6" font-size="10">${count}</text>
       </g>
     `);
   }
@@ -138,7 +142,7 @@ const renderActivityGraph = (data: ActivityData, options: any = {}): string => {
       return `
         <g class="grid-line">
           <line x1="${x}" y1="0" x2="${x}" y2="${graphHeight}" stroke="${textColor}" stroke-opacity="0.1" stroke-dasharray="2,2" />
-          <text x="${x}" y="${graphHeight + 15}" text-anchor="middle" fill="${textColor}" fill-opacity="0.8" font-size="10">${dayNum}</text>
+          <text x="${x}" y="${graphHeight + 18}" text-anchor="middle" fill="${textColor}" fill-opacity="0.8" font-size="10">${dayNum}</text>
         </g>
       `;
     })
@@ -156,20 +160,20 @@ const renderActivityGraph = (data: ActivityData, options: any = {}): string => {
     .activity-area {
       fill: ${areaColorVal};
       stroke: none;
-      opacity: ${hide_area ? 0 : 0.8};
+      opacity: ${hide_area ? 0 : 0.6};
     }
     .activity-point {
       fill: ${pointColorVal};
       stroke: ${bgColor};
-      stroke-width: 1.5;
+      stroke-width: 2;
       opacity: 0;
       ${disable_animations ? "opacity: 1;" : "animation: fadeIn 0.5s ease-out forwards 1.2s;"}
     }
     .axis-label {
       fill: ${textColor};
-      fill-opacity: 0.8;
-      font-size: 12px;
-      font-weight: 600;
+      fill-opacity: 0.9;
+      font-size: 13px;
+      font-weight: 700;
     }
     @keyframes drawLine {
       from { stroke-dasharray: 2000; stroke-dashoffset: 2000; }
@@ -179,9 +183,9 @@ const renderActivityGraph = (data: ActivityData, options: any = {}): string => {
       from { opacity: 0; }
       to { opacity: 1; }
     }
-    text { font-family: ${font_family || "Segoe UI, Ubuntu, sans-serif"}; }
+    text { font-family: ${font_family || "'Segoe UI', Ubuntu, sans-serif"}; }
     .header-centered {
-      font: 600 18px "${font_family || "Segoe UI, Ubuntu, sans-serif"}";
+      font: 700 20px "${font_family || "'Segoe UI', Ubuntu, sans-serif"}";
       fill: ${titleColor};
       text-anchor: middle;
     }
@@ -204,7 +208,7 @@ const renderActivityGraph = (data: ActivityData, options: any = {}): string => {
   });
 
   card.setHideBorder(hide_border);
-  card.setHideTitle(true); // Ocultamos para centralizar manualmente
+  card.setHideTitle(true);
   card.setCSS(styles);
 
   if (disable_animations) {
@@ -213,17 +217,17 @@ const renderActivityGraph = (data: ActivityData, options: any = {}): string => {
 
   const svgContent = `
     <!-- Título Centralizado -->
-    <text x="${width / 2}" y="35" class="header-centered">${custom_title || `${name}'s Contribution Graph`}</text>
+    <text x="${width / 2}" y="45" class="header-centered">${custom_title || `${name}'s Contribution Graph`}</text>
 
     <!-- Rótulo Eixo Y (Vertical) -->
-    <text transform="translate(15, ${paddingTop + graphHeight / 2}) rotate(-90)" text-anchor="middle" class="axis-label">Contributions</text>
+    <text transform="translate(20, ${paddingTop + graphHeight / 2}) rotate(-90)" text-anchor="middle" class="axis-label">Contributions</text>
 
     <g transform="translate(${paddingLeft}, ${paddingTop})">
       <!-- Grids and Axis Labels -->
       ${yAxisLabels.join("")}
       ${verticalGrids}
 
-      <!-- Graph Area and Line -->
+      <!-- Graph -->
       ${!hide_area ? `<polyline class="activity-area" points="${areaPoints}" />` : ""}
       <polyline class="activity-line" points="${polylinePoints}" stroke-dasharray="2000" stroke-dashoffset="2000" />
       
@@ -231,7 +235,7 @@ const renderActivityGraph = (data: ActivityData, options: any = {}): string => {
       ${points
         .map(
           (p, i) => `
-        <circle class="activity-point" cx="${p.x.toFixed(2)}" cy="${p.y.toFixed(2)}" r="4">
+        <circle class="activity-point" cx="${p.x.toFixed(2)}" cy="${p.y.toFixed(2)}" r="4.5">
           <title>${recentContributions[i].date}: ${recentContributions[i].contributionCount} contributions</title>
         </circle>
       `,
@@ -239,7 +243,7 @@ const renderActivityGraph = (data: ActivityData, options: any = {}): string => {
         .join("")}
 
       <!-- Rótulo Eixo X (Dias) -->
-      <text x="${graphWidth / 2}" y="${graphHeight + 40}" text-anchor="middle" class="axis-label">Days</text>
+      <text x="${graphWidth / 2}" y="${graphHeight + 45}" text-anchor="middle" class="axis-label">Days</text>
     </g>
   `;
 
