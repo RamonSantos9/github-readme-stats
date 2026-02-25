@@ -217,22 +217,35 @@
       <!-- Activity Graph -->
       <div class="section" style="grid-column: 1 / -1">
         <h2>📈 Gráfico de Atividade</h2>
-        <div class="card-preview">
+        <div
+          class="card-preview"
+          style="align-items: center; justify-content: center"
+        >
           <div>
             <img
               src="/api/activity?username=ramonsantos9&theme=dracula&font_family=Bricolage+Grotesque"
               alt="Activity Graph Default"
-              style="max-width: 800px; width: 100%"
+              style="
+                max-width: 880px;
+                width: 100%;
+                border: 1px solid var(--border);
+              "
             />
-            <div class="label">Padrão (Dracula)</div>
+            <div class="label">Padrão (Dracula) - 880x300</div>
           </div>
-          <div>
+          <div style="margin-top: 20px">
             <img
-              src="/api/activity?username=ramonsantos9&theme=radical&line_color=FB8C00&point_color=FB8C00&font_family=Bricolage+Grotesque"
+              src="/api/activity?username=ramonsantos9&theme=radical&line_color=FB8C00&point_color=FB8C00&font_family=Bricolage+Grotesque&card_height=250"
               alt="Activity Graph Custom"
-              style="max-width: 800px; width: 100%"
+              style="
+                max-width: 880px;
+                width: 100%;
+                border: 1px solid var(--border);
+              "
             />
-            <div class="label">Cores Customizadas (Laranja)</div>
+            <div class="label">
+              Cores Customizadas (Laranja) - Altura Reduzida
+            </div>
           </div>
         </div>
       </div>
