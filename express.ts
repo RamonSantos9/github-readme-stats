@@ -7,6 +7,7 @@ import repoCard from "./api/pin.js";
 import langCard from "./api/top-langs.js";
 import wakatimeCard from "./api/wakatime.js";
 import gistCard from "./api/gist.js";
+import activityCard from "./api/activity.js";
 import express, { Request, Response, NextFunction } from "express";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -23,6 +24,7 @@ router.get("/pin", repoCard as any);
 router.get("/top-langs", langCard as any);
 router.get("/wakatime", wakatimeCard as any);
 router.get("/gist", gistCard as any);
+router.get("/activity", activityCard as any);
 
 app.use((req: any, res: any, next: any) => {
   console.log(`[Express] Req: ${req.method} ${req.url}`);

@@ -207,3 +207,23 @@ export type WakaTimeLang = {
   /** Percentual de uso (0-100). */
   percent: number;
 };
+
+/**
+ * Dados de um dia de contribuição.
+ */
+export type ContributionDay = {
+  /** Quantidade de contribuições. */
+  contributionCount: number;
+  /** Data no formato YYYY-MM-DD. */
+  date: string;
+};
+
+/**
+ * Dados de atividade do usuário (calendário de contribuições).
+ */
+export type ActivityData = {
+  /** Nome de exibição ou login. */
+  name: string;
+  /** Lista de dias de contribuição dos últimos 12 meses. */
+  contributions: ContributionDay[];
+};

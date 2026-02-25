@@ -1117,6 +1117,66 @@ const isLocaleAvailable = (locale: string): boolean => {
   return availableLocales.includes(locale.toLowerCase());
 };
 
+const activityGraphLocales = ({
+  name,
+  apostrophe,
+}: {
+  name: string;
+  apostrophe: string;
+}): LocaleSet => {
+  const encodedName = encodeHTML(name);
+  return {
+    "activitygraph.title": {
+      en: `${encodedName}'${apostrophe} Activity Graph`,
+      ar: `${encodedName} رسومات بيانية للنشاط`,
+      az: `${encodedName}'${apostrophe} Fəallıq Qrafiki`,
+      ca: `Gràfic de contribucions de ${encodedName}`,
+      cn: `${encodedName} 的活动图`,
+      "zh-tw": `${encodedName} 的活動圖`,
+      cs: `Graf aktivity uživatele ${encodedName}`,
+      de: `${encodedName + apostrophe} Aktivitätsgraph`,
+      sw: `Grafu ya Shughuli ya ${encodedName}`,
+      ur: `${encodedName} کا سرگرمی گراف`,
+      bg: `График на активността на ${encodedName}`,
+      bn: `${encodedName} এর অ্যাক্টিভিটি গ্রাফ`,
+      es: `Gráfico de actividad de ${encodedName}`,
+      fa: `نمودار فعالیت ${encodedName}`,
+      fi: `${encodedName}:n aktiivisuuskaavio`,
+      fr: `Graphique d'activité de ${encodedName}`,
+      hi: `${encodedName} का गतिविधि ग्राफ़`,
+      sa: `${encodedName} इत्यस्य क्रिया-आलेखः`,
+      hu: `${encodedName} aktivitási grafikonja`,
+      it: `Grafico dell'attività di ${encodedName}`,
+      ja: `${encodedName}の活動グラフ`,
+      kr: `${encodedName}의 활동 그래프`,
+      nl: `${encodedName}'${apostrophe} activiteitsgrafiek`,
+      "pt-pt": `Gráfico de atividade de ${encodedName}`,
+      "pt-br": `Gráfico de Atividade de ${encodedName}`,
+      np: `${encodedName}'${apostrophe} गतिविधि گراف`,
+      el: `Γράφημα δραστηριότητας του ${encodedName}`,
+      ro: `Graficul de activitate al lui ${encodedName}`,
+      ru: `График активности ${encodedName}`,
+      "uk-ua": `Графік активності ${encodedName}`,
+      id: `Grafik Aktivitas ${encodedName}`,
+      ml: `${encodedName}'${apostrophe} പ്രവർത്തന ഗ്രാഫ്`,
+      my: `${encodedName} ၏ လှုပ်ရှားမှုပြ ဂရပ်`,
+      ta: `${encodedName} இன் செயல்பாட்டு வரைபடம்`,
+      sk: `Graf aktivity používateľa ${encodedName}`,
+      tr: `${encodedName} Hesabının Aktivite Grafiği`,
+      pl: `Wykres aktywności użytkownika ${encodedName}`,
+      uz: `${encodedName}ning faollik grafigi`,
+      vi: `Biểu Đồ Hoạt Động của ${encodedName}`,
+      se: `Aktivitetsgraf för ${encodedName}`,
+      he: `גרף הפעילות של ${encodedName}`,
+      fil: `Graph ng Aktibidad ni ${encodedName}`,
+      th: `กราφกิจกรรมของ ${encodedName}`,
+      sr: `График активности коريسника ${encodedName}`,
+      "sr-latn": `Grafik aktivnosti korisnika ${encodedName}`,
+      no: `Aktivitetsgraf for ${encodedName}`,
+    },
+  };
+};
+
 export {
   availableLocales,
   isLocaleAvailable,
@@ -1124,4 +1184,5 @@ export {
   repoCardLocales,
   statCardLocales,
   wakatimeCardLocales,
+  activityGraphLocales,
 };

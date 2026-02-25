@@ -143,3 +143,24 @@ export type GistCardOptions = CommonOptions & {
   /** Se `true`, exibe o nome do dono junto ao nome do gist. */
   show_owner: boolean;
 };
+/**
+ * Opções específicas do card de gráfico de atividade.
+ */
+export type ActivityGraphOptions = CommonOptions & {
+  /** Se `true`, oculta o título do card. */
+  hide_title: boolean;
+  /** Título personalizado. */
+  custom_title: string;
+  /** Largura do card em pixels. */
+  card_width: number;
+  /** Cor hexadecimal da linha do gráfico. */
+  line_color: string;
+  /** Cor hexadecimal dos pontos do gráfico. */
+  point_color: string;
+  /** Cor hexadecimal da área sob a linha. */
+  area_color: string;
+  /** Se `true`, oculta a área sob a linha. */
+  hide_area: boolean;
+  /** Se `true`, desativa as animações. */
+  disable_animations: boolean;
+};
