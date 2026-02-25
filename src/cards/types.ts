@@ -180,3 +180,19 @@ export type StreakCardOptions = CommonOptions & {
   /** Cor do fogo (flame). */
   fire_color: string;
 };
+
+/**
+ * Opções para o card de título (Header).
+ */
+export type HeaderCardOptions = CommonOptions & {
+  /** O texto a ser exibido no título. */
+  text: string;
+  /** Tamanho da fonte em pixels. */
+  font_size: number;
+  /** Peso da fonte (ex.: 200, 400, 700, 800). */
+  font_weight: number;
+  /** Alinhamento do texto: "left", "center", "right". */
+  align: "left" | "center" | "right";
+  /** Largura personalizada. */
+  card_width: number;
+};
