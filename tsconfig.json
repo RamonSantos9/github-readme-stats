@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    /* Configurações de destino de compilação */
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2022"],
+
+    /* Configurações do projeto */
+    "rootDir": ".",
+    "outDir": "./dist",
+
+    /* Verificação de tipos rigorosa */
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+
+    /* Interoperabilidade com módulos CommonJS */
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+
+    /* Configurações de declaração */
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+
+    /* Configurações de diagnóstico */
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+
+    /* Configurações experimentais */
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": false
+  },
+  "include": [
+    "src/**/*.ts",
+    "api/**/*.ts",
+    "scripts/**/*.ts",
+    "themes/**/*.ts",
+    "*.ts"
+  ],
+  "exclude": ["node_modules", "dist", "coverage", "tests/**/*.ts"]
+}

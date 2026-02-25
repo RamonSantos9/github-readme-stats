@@ -1,0 +1,78 @@
+{
+  "name": "meu-github-readme-stats",
+  "version": "1.0.0",
+  "description": "Gerador de estatísticas dinâmicas para o currículo do GitHub",
+  "keywords": [
+    "github-readme-stats",
+    "readme-stats",
+    "cards",
+    "card-generator"
+  ],
+  "main": "src/index.ts",
+  "type": "module",
+  "author": "Ramon Santos",
+  "license": "MIT",
+  "scripts": {
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
+    "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
+    "test:update:snapshot": "node --experimental-vm-modules node_modules/jest/bin/jest.js -u",
+    "test:e2e": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.e2e.config.js",
+    "theme-readme-gen": "tsx scripts/generate-theme-doc.ts",
+    "preview-theme": "tsx scripts/preview-theme.ts",
+    "close-stale-theme-prs": "tsx scripts/close-stale-theme-prs.ts",
+    "generate-langs-json": "tsx scripts/generate-langs-json.ts",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepare": "husky",
+    "lint": "npx eslint --max-warnings 0 \"./src/**/*.{js,ts}\" \"./scripts/**/*.{js,ts}\" \"./tests/**/*.{js,ts}\" \"./api/**/*.{js,ts}\" \"./themes/**/*.{js,ts}\"",
+    "typecheck": "tsc --noEmit",
+    "compile": "tsc",
+    "bench": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.bench.config.js",
+    "dev": "npx tsx --watch express.ts"
+  },
+  "devDependencies": {
+    "@actions/core": "^2.0.1",
+    "@actions/github": "^6.0.1",
+    "@eslint/eslintrc": "^3.3.3",
+    "@eslint/js": "^9.39.2",
+    "@swc/core": "^1.15.13",
+    "@swc/jest": "^0.2.39",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.3.0",
+    "@uppercod/css-to-object": "^1.1.1",
+    "@vercel/node": "^5.6.7",
+    "axios-mock-adapter": "^2.1.0",
+    "color-contrast-checker": "^2.1.0",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-jsdoc": "^61.5.0",
+    "express": "^5.2.1",
+    "globals": "^16.5.0",
+    "hjson": "^3.2.2",
+    "husky": "^9.1.7",
+    "jest": "^30.2.0",
+    "jest-environment-jsdom": "^30.2.0",
+    "js-yaml": "^4.1.1",
+    "lint-staged": "^16.2.7",
+    "lodash.snakecase": "^4.1.1",
+    "parse-diff": "^0.11.1",
+    "prettier": "^3.7.3",
+    "tsx": "^4.19.2",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "axios": "^1.13.1",
+    "dotenv": "^17.2.3",
+    "emoji-name-map": "^2.0.3",
+    "github-username-regex": "^1.0.0",
+    "word-wrap": "^1.2.5"
+  },
+  "lint-staged": {
+    "*.{js,css,md}": "prettier --write"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

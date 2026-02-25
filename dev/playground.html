@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GitHub Readme Stats - Playground</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..125,200..800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0b0e14;
+        --card-bg: #161b22;
+        --text: #c9d1d9;
+        --accent: #58a6ff;
+        --border: #30363d;
+        --font-primary:
+          "Bricolage Grotesque", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Helvetica, Arial, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+        font-family: var(--font-primary);
+      }
+
+      body {
+        background-color: var(--bg);
+        color: var(--text);
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      h1 {
+        color: var(--accent);
+        margin-bottom: 30px;
+        font-size: 2rem;
+        text-shadow: 0 0 10px rgba(88, 166, 255, 0.3);
+      }
+
+      .container {
+        width: 100%;
+        max-width: 1200px;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 30px;
+      }
+
+      .section {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      }
+
+      .section h2 {
+        margin-top: 0;
+        font-size: 1.2rem;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+        color: white;
+      }
+
+      .card-preview {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        align-items: center;
+      }
+
+      .card-preview img {
+        max-width: 100%;
+        border-radius: 6px;
+        transition: transform 0.2s;
+      }
+
+      .card-preview img:hover {
+        transform: scale(1.02);
+      }
+
+      .label {
+        font-size: 0.85rem;
+        color: #8b949e;
+        margin-top: 5px;
+      }
+
+      .theme-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .footer {
+        margin-top: 50px;
+        font-size: 0.9rem;
+        color: #8b949e;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>GitHub Readme Stats Playground</h1>
+
+    <div class="container">
+      <!-- Stats Cards -->
+      <div class="section">
+        <h2>🥇 Estatísticas Gerais</h2>
+        <div class="card-preview">
+          <div>
+            <img
+              src="/api?username=ramonsantos9&font_family=Bricolage+Grotesque"
+              alt="Stats Default"
+            />
+            <div class="label">Padrão (Default)</div>
+          </div>
+          <div>
+            <img
+              src="/api?username=ramonsantos9&theme=radical&font_family=Bricolage+Grotesque"
+              alt="Stats Radical"
+            />
+            <div class="label">Tema: Radical</div>
+          </div>
+          <div>
+            <img
+              src="/api?username=ramonsantos9&show_icons=true&theme=tokyonight&font_family=Bricolage+Grotesque"
+              alt="Stats Icons"
+            />
+            <div class="label">Ícones + TokyoNight</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Repo Cards -->
+      <div class="section">
+        <h2>📌 Repositórios Pinados</h2>
+        <div class="card-preview">
+          <div>
+            <img
+              src="/api/pin?username=ramonsantos9&repo=ramonsantos9&font_family=Bricolage+Grotesque"
+              alt="Repo Default"
+            />
+            <div class="label">Repositório de Perfil</div>
+          </div>
+          <div>
+            <img
+              src="/api/pin?username=ramonsantos9&repo=ramonsantos9&theme=merko&font_family=Bricolage+Grotesque"
+              alt="Repo Merko"
+            />
+            <div class="label">Tema: Merko</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Language Cards -->
+      <div class="section">
+        <h2>📊 Linguagens mais Usadas</h2>
+        <div class="card-preview">
+          <div>
+            <img
+              src="/api/top-langs?username=ramonsantos9&layout=compact&font_family=Bricolage+Grotesque"
+              alt="Langs Compact"
+            />
+            <div class="label">Layout: Compacto</div>
+          </div>
+          <div>
+            <img
+              src="/api/top-langs?username=ramonsantos9&layout=donut&font_family=Bricolage+Grotesque"
+              alt="Langs Donut"
+            />
+            <div class="label">Layout: Donut</div>
+          </div>
+          <div>
+            <img
+              src="/api/top-langs?username=ramonsantos9&layout=pie&font_family=Bricolage+Grotesque"
+              alt="Langs Pie"
+            />
+            <div class="label">Layout: Pizza (Pie)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gist Cards -->
+      <div class="section">
+        <h2>code 📝 Gists</h2>
+        <div class="card-preview">
+          <div>
+            <img
+              src="/api/gist?id=bbfce31e0217a3689c8d961a356cb10d&font_family=Bricolage+Grotesque"
+              alt="Gist Default"
+            />
+            <div class="label">ID de Exemplo</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- WakaTime -->
+      <div class="section">
+        <h2>🕒 WakaTime Stats</h2>
+        <div class="card-preview">
+          <div>
+            <img
+              src="/api/wakatime?username=ramonsantos9&font_family=Bricolage+Grotesque"
+              alt="WakaTime Default"
+            />
+            <div class="label">Métricas de Tempo</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      Aberto para o desenvolvimento local. Editado com ❤️ por Antigravity.
+    </div>
+
+    <script>
+      // Adiciona um listener para recarregar as imagens caso o servidor reinicie
+      window.addEventListener("focus", () => {
+        const imgs = document.querySelectorAll("img");
+        imgs.forEach((img) => {
+          const url = new URL(img.src, window.location.origin);
+          url.searchParams.set("t", Date.now());
+          img.src = url.toString();
+        });
+      });
+    </script>
+  </body>
+</html>
