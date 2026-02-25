@@ -23,25 +23,15 @@ const formatDateRange = (
 
   const start = new Date(startStr);
   const end = new Date(endStr);
-  const now = new Date();
 
   const options: Intl.DateTimeFormatOptions = {
-    month: "short",
-    day: "numeric",
-  };
-  const yearOptions: Intl.DateTimeFormatOptions = {
-    ...options,
+    day: "2-digit",
+    month: "2-digit",
     year: "numeric",
   };
 
-  const startFormatted = start.toLocaleDateString(
-    locale,
-    start.getFullYear() === now.getFullYear() ? options : yearOptions,
-  );
-  const endFormatted = end.toLocaleDateString(
-    locale,
-    end.getFullYear() === now.getFullYear() ? options : yearOptions,
-  );
+  const startFormatted = start.toLocaleDateString(locale, options);
+  const endFormatted = end.toLocaleDateString(locale, options);
 
   return `${startFormatted} - ${endFormatted}`;
 };
@@ -128,8 +118,8 @@ const renderStreakCard = (
   // Formata o período total
   const startDate = new Date(firstContribution);
   const startFormatted = startDate.toLocaleDateString(locale, {
-    month: "short",
-    day: "numeric",
+    day: "2-digit",
+    month: "2-digit",
     year: "numeric",
   });
   const totalRange = `${startFormatted} - ${l("streakcard.present")}`;
