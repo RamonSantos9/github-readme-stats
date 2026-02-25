@@ -113,6 +113,11 @@ const renderStreakCard = (
   card.height = height; // Restore height after setHideTitle(true) reduced it
   card.paddingX = 0; // Ensure no translation in Card.render
 
+  card.setAccessibilityLabel({
+    title: `GitHub Streak Stats para ${streakData.name}`,
+    desc: `Mostrando sequências de contribuições de ${streakData.name}: total de ${totalContributions}, sequência atual de ${currentStreak.length} e maior sequência de ${longestStreak.length}`,
+  });
+
   const i18n = streakCardLocales();
   const l = (key: string) => i18n[key][locale] || i18n[key].en;
 
