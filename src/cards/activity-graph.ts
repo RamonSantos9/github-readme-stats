@@ -13,11 +13,11 @@ const DEFAULT_WIDTH = 880;
 const DEFAULT_HEIGHT = 300;
 
 /**
- * Retorna o nome curto do mês.
+ * Retorna o dia do mês.
  */
-const getMonthName = (dateStr: string): string => {
+const getDayOfMonth = (dateStr: string): string => {
   const date = new Date(dateStr);
-  return date.toLocaleString("en-US", { month: "short" });
+  return date.getDate().toString();
 };
 
 /**
@@ -54,10 +54,13 @@ const renderActivityGraph = (data: ActivityData, options: any = {}): string => {
   const width = parseInt(card_width, 10) || DEFAULT_WIDTH;
   const height = parseInt(card_height, 10) || DEFAULT_HEIGHT;
 
-  const paddingX = 50;
-  const paddingY = 80;
-  const graphWidth = width - paddingX * 2;
-  const graphHeight = height - paddingY * 2;
+  const paddingLeft = 60;
+  const paddingRight = 30;
+  const paddingTop = 70;
+  const paddingBottom = 60;
+
+  const graphWidth = width - paddingLeft - paddingRight;
+  const graphHeight = height - paddingTop - paddingBottom;
 
   const { titleColor, iconColor, textColor, bgColor, borderColor } =
     getCardColors({
@@ -81,19 +84,18 @@ const renderActivityGraph = (data: ActivityData, options: any = {}): string => {
 
   // Mostra apenas os últimos 31 dias
   const recentContributions = contributions.slice(-31);
-  const totalContributions = recentContributions.reduce(
-    (acc, curr) => acc + curr.contributionCount,
-    0,
-  );
   const maxContributions = Math.max(
     ...recentContributions.map((d) => d.contributionCount),
     1,
   );
 
+  // Arredonda o máximo para o próximo par para ter labels bonitos como na imagem
+  const yMax =
+    maxContributions % 2 === 0 ? maxContributions : maxContributions + 1;
+
   const points = recentContributions.map((day, i) => {
     const x = (i / (recentContributions.length - 1)) * graphWidth;
-    const y =
-      graphHeight - (day.contributionCount / maxContributions) * graphHeight;
+    const y = graphHeight - (day.contributionCount / yMax) * graphHeight;
     return { x, y };
   });
 
@@ -108,48 +110,37 @@ const renderActivityGraph = (data: ActivityData, options: any = {}): string => {
     .map((p) => `${p.x.toFixed(2)},${p.y.toFixed(2)}`)
     .join(" ");
 
-  const lineColorVal = line_color ? `#${line_color}` : titleColor;
-  const pointColorVal = point_color ? `#${point_color}` : textColor;
-  const areaColorVal = area_color ? `#${area_color}` : `${lineColorVal}33`;
+  const lineColorVal = line_color ? `#${line_color}` : "#FB8C00"; // Laranja padrão se não especificado
+  const pointColorVal = point_color ? `#${point_color}` : lineColorVal;
+  const areaColorVal = area_color ? `#${area_color}` : `${lineColorVal}22`;
 
-  // Grid Horizontal (Y-axis)
-  const yAxisLevels = [0, 0.25, 0.5, 0.75, 1];
-  const horizontalGrids = yAxisLevels
-    .map((level) => {
-      const y = graphHeight - level * graphHeight;
-      const count = Math.round(level * maxContributions);
-      return `
+  // Grid Horizontal (Y-axis) e Labels
+  const yAxisSteps = 5; // Número de divisões
+  const yAxisLabels = [];
+  for (let i = 0; i <= yAxisSteps; i++) {
+    const level = i / yAxisSteps;
+    const y = graphHeight - level * graphHeight;
+    const count = Math.round(level * yMax);
+    yAxisLabels.push(`
       <g class="grid-line">
-        <line x1="0" y1="${y}" x2="${graphWidth}" y2="${y}" stroke="${textColor}" stroke-opacity="0.1" stroke-dasharray="4" />
-        <text x="-10" y="${y + 4}" text-anchor="end" fill="${textColor}" fill-opacity="0.4" font-size="10">${count}</text>
+        <line x1="0" y1="${y}" x2="${graphWidth}" y2="${y}" stroke="${textColor}" stroke-opacity="0.1" stroke-dasharray="2,2" />
+        <text x="-10" y="${y + 4}" text-anchor="end" fill="${textColor}" fill-opacity="0.6" font-size="10">${count}</text>
       </g>
-    `;
-    })
-    .join("");
+    `);
+  }
 
-  // Grid Vertical (X-axis) e Labels de Mês
-  const monthLabels: string[] = [];
-  let lastMonth = "";
+  // Grid Vertical (X-axis) e Labels de Dia
   const verticalGrids = recentContributions
     .map((day, i) => {
       const x = (i / (recentContributions.length - 1)) * graphWidth;
-      const currentMonth = getMonthName(day.date);
-      let monthLabel = "";
-      if (currentMonth !== lastMonth) {
-        monthLabel = `<text x="${x}" y="${graphHeight + 20}" text-anchor="middle" fill="${textColor}" fill-opacity="0.6" font-size="11">${currentMonth}</text>`;
-        lastMonth = currentMonth;
-      }
+      const dayNum = getDayOfMonth(day.date);
 
-      // Mostra grid vertical apenas no início de cada semana (a cada 7 dias) ou no início do mês
-      if (i % 7 === 0 || monthLabel) {
-        return `
+      return `
         <g class="grid-line">
-          <line x1="${x}" y1="0" x2="${x}" y2="${graphHeight}" stroke="${textColor}" stroke-opacity="0.1" stroke-dasharray="4" />
-          ${monthLabel}
+          <line x1="${x}" y1="0" x2="${x}" y2="${graphHeight}" stroke="${textColor}" stroke-opacity="0.1" stroke-dasharray="2,2" />
+          <text x="${x}" y="${graphHeight + 15}" text-anchor="middle" fill="${textColor}" fill-opacity="0.8" font-size="10">${dayNum}</text>
         </g>
       `;
-      }
-      return "";
     })
     .join("");
 
@@ -165,7 +156,7 @@ const renderActivityGraph = (data: ActivityData, options: any = {}): string => {
     .activity-area {
       fill: ${areaColorVal};
       stroke: none;
-      opacity: ${hide_area ? 0 : 0.3};
+      opacity: ${hide_area ? 0 : 0.8};
     }
     .activity-point {
       fill: ${pointColorVal};
@@ -173,6 +164,12 @@ const renderActivityGraph = (data: ActivityData, options: any = {}): string => {
       stroke-width: 1.5;
       opacity: 0;
       ${disable_animations ? "opacity: 1;" : "animation: fadeIn 0.5s ease-out forwards 1.2s;"}
+    }
+    .axis-label {
+      fill: ${textColor};
+      fill-opacity: 0.8;
+      font-size: 12px;
+      font-weight: 600;
     }
     @keyframes drawLine {
       from { stroke-dasharray: 2000; stroke-dashoffset: 2000; }
@@ -183,10 +180,15 @@ const renderActivityGraph = (data: ActivityData, options: any = {}): string => {
       to { opacity: 1; }
     }
     text { font-family: ${font_family || "Segoe UI, Ubuntu, sans-serif"}; }
+    .header-centered {
+      font: 600 18px "${font_family || "Segoe UI, Ubuntu, sans-serif"}";
+      fill: ${titleColor};
+      text-anchor: middle;
+    }
   `;
 
   const card = new Card({
-    customTitle: custom_title,
+    customTitle: custom_title || `${name}'s Contribution Graph`,
     defaultTitle: i18n.t("activitygraph.title"),
     width,
     height,
@@ -202,7 +204,7 @@ const renderActivityGraph = (data: ActivityData, options: any = {}): string => {
   });
 
   card.setHideBorder(hide_border);
-  card.setHideTitle(hide_title);
+  card.setHideTitle(true); // Ocultamos para centralizar manualmente
   card.setCSS(styles);
 
   if (disable_animations) {
@@ -210,30 +212,34 @@ const renderActivityGraph = (data: ActivityData, options: any = {}): string => {
   }
 
   const svgContent = `
-    <g transform="translate(${paddingX}, ${paddingY})">
+    <!-- Título Centralizado -->
+    <text x="${width / 2}" y="35" class="header-centered">${custom_title || `${name}'s Contribution Graph`}</text>
+
+    <!-- Rótulo Eixo Y (Vertical) -->
+    <text transform="translate(15, ${paddingTop + graphHeight / 2}) rotate(-90)" text-anchor="middle" class="axis-label">Contributions</text>
+
+    <g transform="translate(${paddingLeft}, ${paddingTop})">
       <!-- Grids and Axis Labels -->
-      ${horizontalGrids}
+      ${yAxisLabels.join("")}
       ${verticalGrids}
 
-      <!-- Graph -->
+      <!-- Graph Area and Line -->
       ${!hide_area ? `<polyline class="activity-area" points="${areaPoints}" />` : ""}
       <polyline class="activity-line" points="${polylinePoints}" stroke-dasharray="2000" stroke-dashoffset="2000" />
+      
+      <!-- Points -->
       ${points
         .map(
           (p, i) => `
-        <circle class="activity-point" cx="${p.x.toFixed(2)}" cy="${p.y.toFixed(2)}" r="4.5">
+        <circle class="activity-point" cx="${p.x.toFixed(2)}" cy="${p.y.toFixed(2)}" r="4">
           <title>${recentContributions[i].date}: ${recentContributions[i].contributionCount} contributions</title>
         </circle>
       `,
         )
         .join("")}
 
-      <!-- Bottom Stats Summary -->
-      <g transform="translate(0, ${graphHeight + 50})">
-        <text x="0" y="0" fill="${textColor}" fill-opacity="0.6" font-size="12" font-weight="600">Total Contributions: ${totalContributions}</text>
-        <text x="${graphWidth / 2}" y="0" text-anchor="middle" fill="${textColor}" fill-opacity="0.6" font-size="12" font-weight="600">Max Contributions: ${maxContributions}</text>
-        <text x="${graphWidth}" y="0" text-anchor="end" fill="${textColor}" fill-opacity="0.6" font-size="12" font-weight="600">Period: Last 31 Days</text>
-      </g>
+      <!-- Rótulo Eixo X (Dias) -->
+      <text x="${graphWidth / 2}" y="${graphHeight + 40}" text-anchor="middle" class="axis-label">Days</text>
     </g>
   `;
 
