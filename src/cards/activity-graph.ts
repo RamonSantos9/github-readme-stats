@@ -9,7 +9,7 @@ import { activityGraphLocales } from "../translations.js";
 import type { ActivityData } from "../fetchers/types.js";
 import type { ActivityGraphOptions } from "./types.js";
 
-const DEFAULT_WIDTH = 880;
+const DEFAULT_WIDTH = 1200;
 const DEFAULT_HEIGHT = 300;
 
 /**
