@@ -30,41 +30,57 @@ const renderPill = (text: string, color: string): string => {
 };
 
 /**
- * Renderiza um grupo de badges com quebra de linha simples.
+ * Renderiza um grupo de badges com quebra de linha e alinhamento.
  *
  * @param items - Lista de nomes de tecnologia.
  * @param color - Cor dos badges.
  * @param maxWidth - Largura máxima disponível.
+ * @param align - Alinhamento ("left" ou "right").
  * @returns String SVG com os badges posicionados.
  */
 const renderPills = (
   items: string[],
   color: string,
   maxWidth: number,
+  align: "left" | "right" = "left",
 ): string => {
-  let x = 0;
-  let y = 0;
   const gapX = 8;
   const gapY = 10;
-  const pills: string[] = [];
+  const lines: { width: number; pills: { x: number; svg: string }[] }[] = [];
+  let currentLine = { width: 0, pills: [] as { x: number; svg: string }[] };
 
   items.forEach((item) => {
     const pillText = item.trim();
     if (!pillText) return;
 
     const width = measureText(pillText, 12) + 20;
-    if (x + width > maxWidth) {
-      x = 0;
-      y += 22 + gapY;
+    if (currentLine.width + width > maxWidth && currentLine.pills.length > 0) {
+      lines.push(currentLine);
+      currentLine = { width: 0, pills: [] as { x: number; svg: string }[] };
     }
 
-    pills.push(
-      `<g transform="translate(${x}, ${y})">${renderPill(pillText, color)}</g>`,
-    );
-    x += width + gapX;
+    currentLine.pills.push({
+      x: currentLine.width,
+      svg: renderPill(pillText, color),
+    });
+    currentLine.width += width + gapX;
   });
+  if (currentLine.pills.length > 0) lines.push(currentLine);
 
-  return pills.join("");
+  return lines
+    .map((line, lineIdx) => {
+      const lineY = lineIdx * (22 + gapY);
+      const offsetX = align === "right" ? maxWidth - line.width + gapX : 0;
+      return line.pills
+        .map(
+          (pill) =>
+            `<g transform="translate(${pill.x + offsetX}, ${lineY})">${
+              pill.svg
+            }</g>`,
+        )
+        .join("");
+    })
+    .join("");
 };
 
 /**
@@ -90,7 +106,7 @@ const renderStackCard = (options: Partial<StackCardOptions> = {}): string => {
     hide_title = false,
   } = options;
 
-  const { titleColor, bgColor, borderColor, textColor } = getCardColors({
+  const { titleColor, bgColor, borderColor } = getCardColors({
     title_color,
     bg_color,
     border_color,
@@ -99,24 +115,22 @@ const renderStackCard = (options: Partial<StackCardOptions> = {}): string => {
   });
 
   const paddingX = 25;
-  const columnWidth = (card_width - paddingX * 3) / 2;
+  const columnWidth = (card_width - paddingX * 2.5) / 2;
 
   const leftItemsList = left_items.split(",").filter(Boolean);
   const rightItemsList = right_items.split(",").filter(Boolean);
 
-  // Calcula altura dinâmica
-  // Estima linhas: (itens * largura_media) / largura_coluna
   const estimateHeight = (items: string[]) => {
     if (items.length === 0) return 0;
     let x = 0;
     let lines = 1;
     items.forEach((item) => {
-      const w = measureText(item.trim(), 12) + 28;
+      const w = measureText(item.trim(), 12) + 20;
       if (x + w > columnWidth) {
         x = 0;
         lines++;
       }
-      x += w;
+      x += w + 8;
     });
     return lines * 32;
   };
@@ -148,15 +162,15 @@ const renderStackCard = (options: Partial<StackCardOptions> = {}): string => {
       <g>
         <text y="0" fill="${titleColor}" font-family="'Bricolage Grotesque', sans-serif" font-size="18" font-weight="700">${left_title}</text>
         <g transform="translate(0, 15)">
-          ${renderPills(leftItemsList, titleColor, columnWidth)}
+          ${renderPills(leftItemsList, titleColor, columnWidth, "left")}
         </g>
       </g>
 
-      <!-- Coluna Direita -->
-      <g transform="translate(${columnWidth + paddingX}, 0)">
-        <text y="0" fill="${titleColor}" font-family="'Bricolage Grotesque', sans-serif" font-size="18" font-weight="700" text-anchor="start">${right_title}</text>
-        <g transform="translate(0, 15)">
-          ${renderPills(rightItemsList, titleColor, columnWidth)}
+      <!-- Coluna Direita (Pinned to far right) -->
+      <g transform="translate(${card_width - paddingX * 2}, 0)">
+        <text y="0" fill="${titleColor}" font-family="'Bricolage Grotesque', sans-serif" font-size="18" font-weight="700" text-anchor="end">${right_title}</text>
+        <g transform="translate(${-columnWidth}, 15)">
+          ${renderPills(rightItemsList, titleColor, columnWidth, "right")}
         </g>
       </g>
     </g>
