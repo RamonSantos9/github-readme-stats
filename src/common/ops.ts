@@ -41,6 +41,39 @@ const parseBoolean = (
 };
 
 /**
+ * Garante que o valor seja uma string única.
+ * Se o valor for um array, retorna o primeiro elemento.
+ *
+ * @param value - O valor a ser normalizado.
+ * @returns A string resultante ou undefined.
+ */
+const parseString = (
+  value: string | string[] | undefined,
+): string | undefined => {
+  if (Array.isArray(value)) {
+    return value[0];
+  }
+  return value;
+};
+
+/**
+ * Converte um valor de query em número, tratando arrays.
+ *
+ * @param value - O valor a ser convertido.
+ * @returns O número resultante ou undefined se inválido.
+ */
+const parseNumber = (
+  value: string | string[] | undefined,
+): number | undefined => {
+  const str = parseString(value);
+  if (str === undefined) {
+    return undefined;
+  }
+  const num = parseFloat(str);
+  return Number.isNaN(num) ? undefined : num;
+};
+
+/**
  * Converte uma string separada por vírgulas em um array de strings.
  *
  * Útil para processar parâmetros de query string que aceitam múltiplos valores.
@@ -163,6 +196,8 @@ const dateDiff = (d1: Date, d2: Date): number => {
 
 export {
   parseBoolean,
+  parseString,
+  parseNumber,
   parseArray,
   clampValue,
   lowercaseTrim,

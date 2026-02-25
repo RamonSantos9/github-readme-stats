@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GitHub Streak Stats Playground</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@400;600;800&family=Bricolage+Grotesque:wght@400;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary: #fb8c00;
+        --bg: #0f172a;
+        --card-bg: #1e293b;
+        --text: #f8fafc;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: var(--bg);
+        color: var(--text);
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2rem;
+      }
+
+      .container {
+        max-width: 1000px;
+        width: 100%;
+      }
+
+      h1 {
+        font-family: "Outfit", sans-serif;
+        font-size: 2.5rem;
+        margin-bottom: 2rem;
+        text-align: center;
+        background: linear-gradient(to right, #fb8c00, #ffa726);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .card-preview {
+        background: var(--card-bg);
+        padding: 2rem;
+        border-radius: 1rem;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        display: flex;
+        justify-content: center;
+        margin-bottom: 2rem;
+        min-height: 250px;
+        align-items: center;
+      }
+
+      .controls {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        background: var(--card-bg);
+        padding: 2rem;
+        border-radius: 1rem;
+      }
+
+      .group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #94a3b8;
+      }
+
+      input,
+      select {
+        background: #334155;
+        border: 1px solid #475569;
+        color: white;
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+        font-family: inherit;
+      }
+
+      input:focus {
+        outline: 2px solid var(--primary);
+        border-color: transparent;
+      }
+
+      .color-inputs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+
+      .url-box {
+        margin-top: 2rem;
+        background: #020617;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        font-family: monospace;
+        word-break: break-all;
+        position: relative;
+        border-left: 4px solid var(--primary);
+      }
+
+      .copy-btn {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        background: var(--primary);
+        border: none;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 0.25rem;
+        cursor: pointer;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Streak Stats Generator</h1>
+
+      <div class="card-preview" id="preview">
+        <!-- SVG will be loaded here -->
+        <p>Carregando...</p>
+      </div>
+
+      <div class="controls">
+        <div class="group">
+          <label for="username">GitHub Username</label>
+          <input type="text" id="username" value="ramonsantos9" />
+        </div>
+
+        <div class="group">
+          <label for="theme">Theme</label>
+          <select id="theme">
+            <option value="default">Default</option>
+            <option value="dark">Dark</option>
+            <option value="radical">Radical</option>
+            <option value="merko">Merko</option>
+            <option value="gruvbox">Gruvbox</option>
+            <option value="tokyonight">Tokyo Night</option>
+            <option value="onedark">One Dark</option>
+            <option value="dracula" selected>Dracula</option>
+          </select>
+        </div>
+
+        <div class="group">
+          <label>Custom Colors (Hex without #)</label>
+          <div class="color-inputs">
+            <input type="text" id="title_color" placeholder="Title Color" />
+            <input type="text" id="icon_color" placeholder="Icon Color" />
+            <input type="text" id="text_color" placeholder="Text Color" />
+            <input type="text" id="bg_color" placeholder="BG Color" />
+            <input type="text" id="fire_color" placeholder="Fire Color" />
+          </div>
+        </div>
+
+        <div class="group">
+          <label for="font_family">Font Family</label>
+          <select id="font_family">
+            <option value="Segoe UI">Segoe UI</option>
+            <option value="Outfit">Outfit</option>
+            <option value="Bricolage Grotesque" selected>
+              Bricolage Grotesque
+            </option>
+          </select>
+        </div>
+
+        <div class="group">
+          <label for="border_radius">Border Radius</label>
+          <input type="number" id="border_radius" value="10" />
+        </div>
+
+        <div class="group">
+          <label for="hide_border">Hide Border</label>
+          <select id="hide_border">
+            <option value="false">False</option>
+            <option value="true">True</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="url-box" id="url-container">
+        <span id="url-text"></span>
+        <button class="copy-btn" onclick="copyUrl()">Copy</button>
+      </div>
+    </div>
+
+    <script>
+      const inputs = document.querySelectorAll("input, select");
+      const preview = document.getElementById("preview");
+      const urlText = document.getElementById("url-text");
+
+      function updatePreview() {
+        const params = new URLSearchParams();
+        inputs.forEach((input) => {
+          if (input.value) {
+            params.append(input.id, input.value);
+          }
+        });
+
+        // Usamos a porta do Vercel Dev ou Local se estiver rodando
+        const baseUrl = window.location.origin + "/api/streak";
+        const fullUrl = `${baseUrl}?${params.toString()}`;
+
+        urlText.textContent = fullUrl;
+        preview.innerHTML = `<img src="${fullUrl}" alt="Streak Stats">`;
+      }
+
+      function copyUrl() {
+        navigator.clipboard.writeText(urlText.textContent);
+        alert("URL copiada!");
+      }
+
+      inputs.forEach((input) => input.addEventListener("input", updatePreview));
+
+      // Initial load
+      window.onload = updatePreview;
+    </script>
+  </body>
+</html>

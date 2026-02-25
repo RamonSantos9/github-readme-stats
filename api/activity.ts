@@ -10,7 +10,7 @@ import {
   MissingParamError,
   retrieveSecondaryMessage,
 } from "../src/common/error.js";
-import { parseBoolean } from "../src/common/ops.js";
+import { parseBoolean, parseNumber, parseString } from "../src/common/ops.js";
 import { renderError } from "../src/common/render.js";
 import { fetchActivity } from "../src/fetchers/activity.js";
 import { isLocaleAvailable } from "../src/translations.js";
@@ -44,9 +44,14 @@ export default async (req: VercelRequest, res: VercelResponse) => {
 
   res.setHeader("Content-Type", "image/svg+xml");
 
+  const usernameStr = parseString(username);
+  if (!usernameStr) {
+    throw new MissingParamError(["username"]);
+  }
+
   const access = guardAccess({
     res,
-    id: username,
+    id: usernameStr,
     type: "username",
     colors: {
       title_color,
@@ -60,7 +65,8 @@ export default async (req: VercelRequest, res: VercelResponse) => {
     return access.result;
   }
 
-  if (locale && !isLocaleAvailable(locale)) {
+  const localeStr = parseString(locale) || "pt-br";
+  if (localeStr && !isLocaleAvailable(localeStr)) {
     return res.send(
       renderError({
         message: "Algo deu errado",
@@ -71,16 +77,16 @@ export default async (req: VercelRequest, res: VercelResponse) => {
           bg_color,
           border_color,
           theme,
-          font_family,
+          font_family: parseString(font_family),
         },
       }),
     );
   }
 
   try {
-    const activityData = await fetchActivity(username);
+    const activityData = await fetchActivity(usernameStr);
     const cacheSeconds = resolveCacheSeconds({
-      requested: parseInt(cache_seconds, 10),
+      requested: parseNumber(cache_seconds)!,
       def: CACHE_TTL.STATS_CARD.DEFAULT,
       min: CACHE_TTL.STATS_CARD.MIN,
       max: CACHE_TTL.STATS_CARD.MAX,
@@ -92,17 +98,17 @@ export default async (req: VercelRequest, res: VercelResponse) => {
       renderActivityGraph(activityData, {
         hide_title: parseBoolean(hide_title),
         hide_border: parseBoolean(hide_border),
-        card_width: parseInt(card_width, 10),
-        card_height: parseInt(card_height, 10),
+        card_width: parseNumber(card_width),
+        card_height: parseNumber(card_height),
         title_color,
         icon_color,
         text_color,
         bg_color,
         theme,
-        custom_title,
-        border_radius,
-        border_color,
-        locale: locale ? locale.toLowerCase() : null,
+        custom_title: parseString(custom_title),
+        border_radius: parseNumber(border_radius),
+        border_color: parseString(border_color),
+        locale: localeStr ? localeStr.toLowerCase() : undefined,
         disable_animations: parseBoolean(disable_animations),
         font_family,
         line_color,

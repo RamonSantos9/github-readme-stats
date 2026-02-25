@@ -66,6 +66,7 @@ const renderGistCard = (
     border_color,
     show_owner = false,
     hide_border = false,
+    card_width,
     font_family,
   } = options;
 
@@ -126,13 +127,19 @@ const renderGistCard = (
 
   const header = show_owner ? nameWithOwner : name;
 
+  const width = card_width
+    ? isNaN(card_width)
+      ? CARD_DEFAULT_WIDTH
+      : Math.max(CARD_DEFAULT_WIDTH, card_width)
+    : CARD_DEFAULT_WIDTH;
+
   const card = new Card({
     defaultTitle:
       header.length > HEADER_MAX_LENGTH
         ? `${header.slice(0, HEADER_MAX_LENGTH)}...`
         : header,
     titlePrefixIcon: icons.gist,
-    width: CARD_DEFAULT_WIDTH,
+    width,
     height,
     border_radius,
     colors: {

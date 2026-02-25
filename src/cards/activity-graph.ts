@@ -12,6 +12,31 @@ const DEFAULT_WIDTH = 1200;
 const DEFAULT_HEIGHT = 300;
 
 /**
+ * Gera um caminho SVG suavizado usando curvas de Bézier cúbicas.
+ */
+const getSmoothPath = (points: { x: number; y: number }[]): string => {
+  if (points.length === 0) return "";
+  if (points.length === 1) return `M ${points[0].x},${points[0].y}`;
+
+  let d = `M ${points[0].x},${points[0].y}`;
+
+  for (let i = 0; i < points.length - 1; i++) {
+    const p0 = points[i];
+    const p1 = points[i + 1];
+
+    // Ponto de controle: no meio do caminho horizontalmente
+    const cp1x = p0.x + (p1.x - p0.x) / 2;
+    const cp1y = p0.y;
+    const cp2x = p0.x + (p1.x - p0.x) / 2;
+    const cp2y = p1.y;
+
+    d += ` C ${cp1x.toFixed(2)},${cp1y.toFixed(2)} ${cp2x.toFixed(2)},${cp2y.toFixed(2)} ${p1.x.toFixed(2)},${p1.y.toFixed(2)}`;
+  }
+
+  return d;
+};
+
+/**
  * Retorna o dia do mês.
  */
 const getDayOfMonth = (dateStr: string): string => {
@@ -50,8 +75,8 @@ const renderActivityGraph = (data: ActivityData, options: any = {}): string => {
     hide_area = false,
   } = options;
 
-  const width = parseInt(card_width, 10) || DEFAULT_WIDTH;
-  const height = parseInt(card_height, 10) || DEFAULT_HEIGHT;
+  const width = Math.max(600, parseInt(card_width, 10) || DEFAULT_WIDTH);
+  const height = Math.max(200, parseInt(card_height, 10) || DEFAULT_HEIGHT);
 
   // Ajuste de paddings para evitar cortes
   const paddingLeft = 70;
@@ -101,19 +126,17 @@ const renderActivityGraph = (data: ActivityData, options: any = {}): string => {
   const polylinePoints = points
     .map((p) => `${p.x.toFixed(2)},${p.y.toFixed(2)}`)
     .join(" ");
-  const areaPoints = [
-    { x: 0, y: graphHeight },
-    ...points,
-    { x: graphWidth, y: graphHeight },
-  ]
-    .map((p) => `${p.x.toFixed(2)},${p.y.toFixed(2)}`)
-    .join(" ");
+  const linePath = getSmoothPath(points);
+  const areaPath =
+    points.length > 0
+      ? `${linePath} L ${points[points.length - 1].x.toFixed(2)},${graphHeight} L 0,${graphHeight} Z`
+      : "";
 
   const classicOrange = "#ff7a00";
   const defaultLineColor = theme === "default" ? classicOrange : titleColor;
   const lineColorVal = line_color ? `#${line_color}` : defaultLineColor;
   const pointColorVal = point_color ? `#${point_color}` : lineColorVal;
-  const areaColorVal = area_color ? `#${area_color}` : `${lineColorVal}22`;
+  const areaColorVal = area_color ? `#${area_color}` : lineColorVal;
 
   // Grid Horizontal (Y-axis) e Labels
   const yAxisSteps = 5;
@@ -157,7 +180,7 @@ const renderActivityGraph = (data: ActivityData, options: any = {}): string => {
     .activity-area {
       fill: ${areaColorVal};
       stroke: none;
-      opacity: ${hide_area ? 0 : 0.8};
+      opacity: ${hide_area ? 0 : 0.2};
     }
     .activity-point {
       fill: ${pointColorVal};
@@ -189,7 +212,7 @@ const renderActivityGraph = (data: ActivityData, options: any = {}): string => {
   `;
 
   const card = new Card({
-    customTitle: custom_title || `${name}'s Contribution Graph`,
+    customTitle: custom_title,
     defaultTitle: i18n.t("activitygraph.title"),
     width,
     // Compensamos os 30px que a classe Card remove ao setHideTitle(true)
@@ -217,10 +240,10 @@ const renderActivityGraph = (data: ActivityData, options: any = {}): string => {
   // Ajustamos as posições internas para compensar
   const svgContent = `
     <!-- Título Centralizado -->
-    <text x="${width / 2}" y="15" class="header-centered">${custom_title || `${name}'s Contribution Graph`}</text>
+    <text x="${width / 2}" y="15" class="header-centered">${custom_title || i18n.t("activitygraph.title")}</text>
 
     <!-- Rótulo Eixo Y (Vertical) -->
-    <text transform="translate(15, ${paddingTop + graphHeight / 2 - 25}) rotate(-90)" text-anchor="middle" class="axis-label">Contributions</text>
+    <text transform="translate(15, ${paddingTop + graphHeight / 2 - 25}) rotate(-90)" text-anchor="middle" class="axis-label">${i18n.t("activitygraph.contributions")}</text>
 
     <g transform="translate(${paddingLeft}, ${paddingTop - 25})">
       <!-- Grids and Axis Labels -->
@@ -228,8 +251,8 @@ const renderActivityGraph = (data: ActivityData, options: any = {}): string => {
       ${verticalGrids}
 
       <!-- Graph -->
-      ${!hide_area ? `<polyline class="activity-area" points="${areaPoints}" />` : ""}
-      <polyline class="activity-line" points="${polylinePoints}" stroke-dasharray="2000" stroke-dashoffset="2000" />
+      ${!hide_area ? `<path class="activity-area" d="${areaPath}" />` : ""}
+      <path class="activity-line" d="${linePath}" stroke-dasharray="2000" stroke-dashoffset="2000" />
       
       <!-- Points -->
       ${points
@@ -243,7 +266,7 @@ const renderActivityGraph = (data: ActivityData, options: any = {}): string => {
         .join("")}
 
       <!-- Rótulo Eixo X (Dias) -->
-      <text x="${graphWidth / 2}" y="${graphHeight + 45}" text-anchor="middle" class="axis-label">Days</text>
+      <text x="${graphWidth / 2}" y="${graphHeight + 45}" text-anchor="middle" class="axis-label">${i18n.t("activitygraph.days")}</text>
     </g>
   `;
 

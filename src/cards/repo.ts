@@ -93,6 +93,7 @@ const renderRepoCard = (
     border_color,
     locale,
     description_lines_count,
+    card_width,
     font_family,
   } = options;
 
@@ -167,10 +168,16 @@ const renderRepoCard = (
     gap: 25,
   }).join("");
 
+  const width = card_width
+    ? isNaN(card_width)
+      ? 400
+      : Math.max(400, card_width)
+    : 400;
+
   const card = new Card({
     defaultTitle: header.length > 35 ? `${header.slice(0, 35)}...` : header,
     titlePrefixIcon: icons.contribs,
-    width: 400,
+    width,
     height,
     border_radius,
     colors: {

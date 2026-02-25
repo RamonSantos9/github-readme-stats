@@ -1,4 +1,8 @@
-import { renderRepoCard } from "../src/cards/repo.js";
+/**
+ * @fileoverview API do Card de Streak do GitHub.
+ */
+
+import { renderStreakCard } from "../src/cards/streak.js";
 import { guardAccess } from "../src/common/access.js";
 import {
   CACHE_TTL,
@@ -12,7 +16,7 @@ import {
 } from "../src/common/error.js";
 import { parseBoolean, parseNumber, parseString } from "../src/common/ops.js";
 import { renderError } from "../src/common/render.js";
-import { fetchRepo } from "../src/fetchers/repo.js";
+import { fetchStreak } from "../src/fetchers/streak.js";
 import { isLocaleAvailable } from "../src/translations.js";
 
 import type { VercelRequest, VercelResponse } from "@vercel/node";
@@ -20,21 +24,19 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 export default async (req: VercelRequest, res: VercelResponse) => {
   const {
     username,
-    repo,
     hide_border,
+    card_width,
     title_color,
     icon_color,
     text_color,
     bg_color,
     theme,
-    show_owner,
     cache_seconds,
     locale,
     border_radius,
     border_color,
-    description_lines_count,
-    card_width,
     font_family,
+    fire_color,
   } = req.query as any;
 
   res.setHeader("Content-Type", "image/svg+xml");
@@ -72,25 +74,27 @@ export default async (req: VercelRequest, res: VercelResponse) => {
           bg_color,
           border_color,
           theme,
+          font_family: parseString(font_family),
         },
       }),
     );
   }
 
   try {
-    const repoData = await fetchRepo(usernameStr, parseString(repo)!);
+    const streakData = await fetchStreak(usernameStr);
     const cacheSeconds = resolveCacheSeconds({
       requested: parseNumber(cache_seconds)!,
-      def: CACHE_TTL.PIN_CARD.DEFAULT,
-      min: CACHE_TTL.PIN_CARD.MIN,
-      max: CACHE_TTL.PIN_CARD.MAX,
+      def: CACHE_TTL.STATS_CARD.DEFAULT,
+      min: CACHE_TTL.STATS_CARD.MIN,
+      max: CACHE_TTL.STATS_CARD.MAX,
     });
 
     setCacheHeaders(res, cacheSeconds);
 
     return res.send(
-      renderRepoCard(repoData, {
+      renderStreakCard(streakData, {
         hide_border: parseBoolean(hide_border),
+        card_width: parseNumber(card_width),
         title_color,
         icon_color,
         text_color,
@@ -98,11 +102,9 @@ export default async (req: VercelRequest, res: VercelResponse) => {
         theme,
         border_radius: parseNumber(border_radius),
         border_color: parseString(border_color),
-        show_owner: parseBoolean(show_owner),
         locale: localeStr ? localeStr.toLowerCase() : undefined,
-        description_lines_count: parseNumber(description_lines_count),
-        card_width: parseNumber(card_width),
-        font_family: parseString(font_family),
+        font_family,
+        fire_color: parseString(fire_color),
       }),
     );
   } catch (err) {
@@ -133,6 +135,7 @@ export default async (req: VercelRequest, res: VercelResponse) => {
           bg_color,
           border_color,
           theme,
+          font_family,
         },
       }),
     );

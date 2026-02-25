@@ -8,6 +8,7 @@ import langCard from "./api/top-langs.js";
 import wakatimeCard from "./api/wakatime.js";
 import gistCard from "./api/gist.js";
 import activityCard from "./api/activity.js";
+import streakCard from "./api/streak.js";
 import express, { Request, Response, NextFunction } from "express";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -25,6 +26,7 @@ router.get("/top-langs", langCard as any);
 router.get("/wakatime", wakatimeCard as any);
 router.get("/gist", gistCard as any);
 router.get("/activity", activityCard as any);
+router.get("/streak", streakCard as any);
 
 app.use((req: any, res: any, next: any) => {
   console.log(`[Express] Req: ${req.method} ${req.url}`);
@@ -37,6 +39,12 @@ app.use("/api", router);
 app.get("/playground", (req: Request, res: Response) => {
   const filePath = path.join(__dirname, "dev", "playground.html");
   console.log(`[Playground] Serving file: ${filePath}`);
+  (res as any).sendFile(filePath);
+});
+
+app.get("/streak-playground", (req: Request, res: Response) => {
+  const filePath = path.join(__dirname, "dev", "streak-playground.html");
+  console.log(`[Streak Playground] Serving file: ${filePath}`);
   (res as any).sendFile(filePath);
 });
 

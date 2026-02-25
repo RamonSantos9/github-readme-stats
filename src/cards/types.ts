@@ -84,6 +84,8 @@ export type RepoCardOptions = CommonOptions & {
   show_owner: boolean;
   /** Número máximo de linhas da descrição. */
   description_lines_count: number;
+  /** Largura do card em pixels. */
+  card_width: number;
 };
 
 /**
@@ -142,6 +144,8 @@ export type WakaTimeOptions = CommonOptions & {
 export type GistCardOptions = CommonOptions & {
   /** Se `true`, exibe o nome do dono junto ao nome do gist. */
   show_owner: boolean;
+  /** Largura do card em pixels. */
+  card_width: number;
 };
 /**
  * Opções específicas do card de gráfico de atividade.
@@ -163,4 +167,16 @@ export type ActivityGraphOptions = CommonOptions & {
   hide_area: boolean;
   /** Se `true`, desativa as animações. */
   disable_animations: boolean;
+};
+
+/**
+ * Opções para o card de sequência de contribuições (streaks).
+ */
+export type StreakCardOptions = CommonOptions & {
+  /** Se `true`, oculta a borda do card. */
+  hide_border: boolean;
+  /** Largura do card em pixels. */
+  card_width: number;
+  /** Cor do fogo (flame). */
+  fire_color: string;
 };

@@ -227,3 +227,26 @@ export type ActivityData = {
   /** Lista de dias de contribuição dos últimos 12 meses. */
   contributions: ContributionDay[];
 };
+/**
+ * Dados de sequência de contribuições (streaks).
+ */
+export type StreakData = {
+  /** Nome de exibição. */
+  name: string;
+  /** Data da primeira contribuição ou criação da conta. */
+  firstContribution: string;
+  /** Total de contribuições em todo o período. */
+  totalContributions: number;
+  /** Sequência atual de dias consecutivos. */
+  currentStreak: {
+    start: string;
+    end: string;
+    length: number;
+  };
+  /** Sequência mais longa de dias consecutivos. */
+  longestStreak: {
+    start: string;
+    end: string;
+    length: number;
+  };
+};

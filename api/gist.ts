@@ -13,7 +13,7 @@ import {
   MissingParamError,
   retrieveSecondaryMessage,
 } from "../src/common/error.js";
-import { parseBoolean } from "../src/common/ops.js";
+import { parseBoolean, parseNumber, parseString } from "../src/common/ops.js";
 
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 
@@ -31,14 +31,20 @@ export default async (req: VercelRequest, res: VercelResponse) => {
     border_color,
     show_owner,
     hide_border,
+    card_width,
     font_family,
   } = req.query as any;
 
   res.setHeader("Content-Type", "image/svg+xml");
 
+  const idStr = parseString(id);
+  if (!idStr) {
+    throw new MissingParamError(["id"]);
+  }
+
   const access = guardAccess({
     res,
-    id,
+    id: idStr,
     type: "gist",
     colors: {
       title_color,
@@ -52,7 +58,8 @@ export default async (req: VercelRequest, res: VercelResponse) => {
     return access.result;
   }
 
-  if (locale && !isLocaleAvailable(locale)) {
+  const localeStr = parseString(locale) || "pt-br";
+  if (localeStr && !isLocaleAvailable(localeStr)) {
     return res.send(
       renderError({
         message: "Algo deu errado",
@@ -63,15 +70,16 @@ export default async (req: VercelRequest, res: VercelResponse) => {
           bg_color,
           border_color,
           theme,
+          font_family: parseString(font_family),
         },
       }),
     );
   }
 
   try {
-    const gistData = await fetchGist(id);
+    const gistData = await fetchGist(idStr);
     const cacheSeconds = resolveCacheSeconds({
-      requested: parseInt(cache_seconds, 10),
+      requested: parseNumber(cache_seconds)!,
       def: CACHE_TTL.GIST_CARD.DEFAULT,
       min: CACHE_TTL.GIST_CARD.MIN,
       max: CACHE_TTL.GIST_CARD.MAX,
@@ -86,12 +94,13 @@ export default async (req: VercelRequest, res: VercelResponse) => {
         text_color,
         bg_color,
         theme,
-        border_radius,
-        border_color,
-        locale: locale ? locale.toLowerCase() : null,
+        border_radius: parseNumber(border_radius),
+        border_color: parseString(border_color),
+        locale: localeStr ? localeStr.toLowerCase() : undefined,
         show_owner: parseBoolean(show_owner),
         hide_border: parseBoolean(hide_border),
-        font_family,
+        card_width: parseNumber(card_width),
+        font_family: parseString(font_family),
       }),
     );
   } catch (err) {

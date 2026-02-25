@@ -10,7 +10,12 @@ import {
   MissingParamError,
   retrieveSecondaryMessage,
 } from "../src/common/error.js";
-import { parseArray, parseBoolean } from "../src/common/ops.js";
+import {
+  parseArray,
+  parseBoolean,
+  parseNumber,
+  parseString,
+} from "../src/common/ops.js";
 import { renderError } from "../src/common/render.js";
 import { fetchTopLanguages } from "../src/fetchers/top-languages.js";
 import { isLocaleAvailable } from "../src/translations.js";
@@ -45,9 +50,14 @@ export default async (req: VercelRequest, res: VercelResponse) => {
   } = req.query as any;
   res.setHeader("Content-Type", "image/svg+xml");
 
+  const usernameStr = parseString(username);
+  if (!usernameStr) {
+    throw new MissingParamError(["username"]);
+  }
+
   const access = guardAccess({
     res,
-    id: username,
+    id: usernameStr,
     type: "username",
     colors: {
       title_color,
@@ -61,7 +71,8 @@ export default async (req: VercelRequest, res: VercelResponse) => {
     return access.result;
   }
 
-  if (locale && !isLocaleAvailable(locale)) {
+  const localeStr = parseString(locale) || "pt-br";
+  if (localeStr && !isLocaleAvailable(localeStr)) {
     return res.send(
       renderError({
         message: "Algo deu errado",
@@ -119,13 +130,13 @@ export default async (req: VercelRequest, res: VercelResponse) => {
 
   try {
     const topLangs = await fetchTopLanguages(
-      username,
-      parseArray(exclude_repo),
-      size_weight,
-      count_weight,
+      usernameStr,
+      parseArray(parseString(exclude_repo)),
+      parseNumber(size_weight),
+      parseNumber(count_weight),
     );
     const cacheSeconds = resolveCacheSeconds({
-      requested: parseInt(cache_seconds, 10),
+      requested: parseNumber(cache_seconds)!,
       def: CACHE_TTL.TOP_LANGS_CARD.DEFAULT,
       min: CACHE_TTL.TOP_LANGS_CARD.MIN,
       max: CACHE_TTL.TOP_LANGS_CARD.MAX,
@@ -138,17 +149,17 @@ export default async (req: VercelRequest, res: VercelResponse) => {
         custom_title,
         hide_title: parseBoolean(hide_title),
         hide_border: parseBoolean(hide_border),
-        card_width: parseInt(card_width, 10),
-        hide: parseArray(hide),
+        card_width: parseNumber(card_width),
+        hide: parseArray(parseString(hide)),
         title_color,
         text_color,
         bg_color,
         theme,
-        layout,
-        langs_count,
-        border_radius,
+        layout: parseString(layout) as any,
+        langs_count: parseNumber(langs_count),
+        border_radius: parseNumber(border_radius),
         border_color,
-        locale: locale ? locale.toLowerCase() : null,
+        locale: localeStr ? localeStr.toLowerCase() : undefined,
         disable_animations: parseBoolean(disable_animations),
         hide_progress: parseBoolean(hide_progress),
         stats_format,
