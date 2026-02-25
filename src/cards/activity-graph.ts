@@ -7,7 +7,6 @@ import { getCardColors } from "../common/color.js";
 import { I18n } from "../common/I18n.js";
 import { activityGraphLocales } from "../translations.js";
 import type { ActivityData } from "../fetchers/types.js";
-import type { ActivityGraphOptions } from "./types.js";
 
 const DEFAULT_WIDTH = 1200;
 const DEFAULT_HEIGHT = 300;
@@ -49,16 +48,16 @@ const renderActivityGraph = (data: ActivityData, options: any = {}): string => {
     point_color,
     area_color,
     hide_area = false,
-    theme_line = true, // Nova opção interna para decidir se usa cor do tema ou laranja por padrão
   } = options;
 
   const width = parseInt(card_width, 10) || DEFAULT_WIDTH;
   const height = parseInt(card_height, 10) || DEFAULT_HEIGHT;
 
+  // Ajuste de paddings para evitar cortes
   const paddingLeft = 70;
   const paddingRight = 40;
-  const paddingTop = 80;
-  const paddingBottom = 70;
+  const paddingTop = 70; // Espaço para o título
+  const paddingBottom = 60; // Espaço para o rótulo "Days"
 
   const graphWidth = width - paddingLeft - paddingRight;
   const graphHeight = height - paddingTop - paddingBottom;
@@ -90,8 +89,8 @@ const renderActivityGraph = (data: ActivityData, options: any = {}): string => {
     1,
   );
 
-  // Escala o Y para ter um topo limpo (múltiplo de 5 ou 10)
-  const yMax = Math.ceil(maxContributions / 5) * 5 || 5;
+  // Escala o Y para ter um topo limpo (múltiplo de 2)
+  const yMax = Math.ceil(maxContributions / 2) * 2 || 2;
 
   const points = recentContributions.map((day, i) => {
     const x = (i / (recentContributions.length - 1)) * graphWidth;
@@ -110,13 +109,11 @@ const renderActivityGraph = (data: ActivityData, options: any = {}): string => {
     .map((p) => `${p.x.toFixed(2)},${p.y.toFixed(2)}`)
     .join(" ");
 
-  // Se o usuário passou line_color, usa ela. Senão, se quiser o look "clássico orange", usa orange. Senão usa a cor do tema.
-  // Como o usuário pediu para "temas se aplicarem", vou usar a cor do título por padrão se não for laranja.
   const classicOrange = "#ff7a00";
   const defaultLineColor = theme === "default" ? classicOrange : titleColor;
   const lineColorVal = line_color ? `#${line_color}` : defaultLineColor;
   const pointColorVal = point_color ? `#${point_color}` : lineColorVal;
-  const areaColorVal = area_color ? `#${area_color}` : `${lineColorVal}33`;
+  const areaColorVal = area_color ? `#${area_color}` : `${lineColorVal}22`;
 
   // Grid Horizontal (Y-axis) e Labels
   const yAxisSteps = 5;
@@ -160,7 +157,7 @@ const renderActivityGraph = (data: ActivityData, options: any = {}): string => {
     .activity-area {
       fill: ${areaColorVal};
       stroke: none;
-      opacity: ${hide_area ? 0 : 0.6};
+      opacity: ${hide_area ? 0 : 0.8};
     }
     .activity-point {
       fill: ${pointColorVal};
@@ -195,7 +192,8 @@ const renderActivityGraph = (data: ActivityData, options: any = {}): string => {
     customTitle: custom_title || `${name}'s Contribution Graph`,
     defaultTitle: i18n.t("activitygraph.title"),
     width,
-    height,
+    // Compensamos os 30px que a classe Card remove ao setHideTitle(true)
+    height: height + 30,
     border_radius,
     colors: {
       titleColor,
@@ -215,14 +213,16 @@ const renderActivityGraph = (data: ActivityData, options: any = {}): string => {
     card.disableAnimations();
   }
 
+  // Com hideTitle=true, o corpo começa em translate(0, 25)
+  // Ajustamos as posições internas para compensar
   const svgContent = `
     <!-- Título Centralizado -->
-    <text x="${width / 2}" y="45" class="header-centered">${custom_title || `${name}'s Contribution Graph`}</text>
+    <text x="${width / 2}" y="15" class="header-centered">${custom_title || `${name}'s Contribution Graph`}</text>
 
     <!-- Rótulo Eixo Y (Vertical) -->
-    <text transform="translate(20, ${paddingTop + graphHeight / 2}) rotate(-90)" text-anchor="middle" class="axis-label">Contributions</text>
+    <text transform="translate(15, ${paddingTop + graphHeight / 2 - 25}) rotate(-90)" text-anchor="middle" class="axis-label">Contributions</text>
 
-    <g transform="translate(${paddingLeft}, ${paddingTop})">
+    <g transform="translate(${paddingLeft}, ${paddingTop - 25})">
       <!-- Grids and Axis Labels -->
       ${yAxisLabels.join("")}
       ${verticalGrids}
