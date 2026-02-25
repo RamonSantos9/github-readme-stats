@@ -84,9 +84,9 @@ export default async (req: VercelRequest, res: VercelResponse) => {
     const streakData = await fetchStreak(usernameStr);
     const cacheSeconds = resolveCacheSeconds({
       requested: parseNumber(cache_seconds)!,
-      def: CACHE_TTL.STATS_CARD.DEFAULT,
-      min: CACHE_TTL.STATS_CARD.MIN,
-      max: CACHE_TTL.STATS_CARD.MAX,
+      def: CACHE_TTL.STREAK_CARD.DEFAULT,
+      min: CACHE_TTL.STREAK_CARD.MIN,
+      max: CACHE_TTL.STREAK_CARD.MAX,
     });
 
     setCacheHeaders(res, cacheSeconds);
