@@ -4,39 +4,47 @@
 
 import Card from "../common/Card.js";
 import { getCardColors } from "../common/color.js";
-import { flexLayout, measureText } from "../common/render.js";
+import { measureText } from "../common/render.js";
+import { brandIcons } from "../common/brand-icons.js";
 import type { StackCardOptions } from "./types.js";
 
 /**
- * Renderiza um badge (pill) para um item de tecnologia.
+ * Renderiza um badge (pill) para um item de tecnologia com ícone opcional.
  *
  * @param text - Nome da tecnologia.
  * @param color - Cor do texto.
- * @param bgColor - Cor de fundo (opcional).
  * @returns String SVG do badge.
  */
 const renderPill = (text: string, color: string): string => {
+  const normText = text.trim().toLowerCase().replace(/\s+/g, "");
+  const icon = brandIcons[normText] || brandIcons[text.toLowerCase()];
+
   const paddingX = 10;
   const fontSize = 12;
-  const width = measureText(text, fontSize) + paddingX * 2;
-  const height = 22;
+  const hasIcon = !!icon;
+  const iconSize = 14;
+  const iconGap = 6;
+
+  const textWidth = measureText(text, fontSize);
+  const width = textWidth + paddingX * 2 + (hasIcon ? iconSize + iconGap : 0);
+  const height = 24;
+
+  let iconSvg = "";
+  if (icon) {
+    iconSvg = `<svg x="${paddingX}" y="${(height - iconSize) / 2}" width="${iconSize}" height="${iconSize}" viewBox="0 0 16 16"><path fill="${icon.color || color}" d="${icon.path}" /></svg>`;
+  }
 
   return `
     <g>
-      <rect rx="11" ry="11" width="${width}" height="${height}" fill="${color}" fill-opacity="0.1" stroke="${color}" stroke-opacity="0.2" />
-      <text x="${width / 2}" y="${height / 2 + 4}" fill="${color}" font-family="'Bricolage Grotesque', sans-serif" font-size="${fontSize}" font-weight="600" text-anchor="middle">${text}</text>
+      <rect rx="6" ry="6" width="${width}" height="${height}" fill="${color}" fill-opacity="0.1" stroke="${color}" stroke-opacity="0.2" />
+      ${iconSvg}
+      <text x="${paddingX + (hasIcon ? iconSize + iconGap : 0)}" y="${height / 2 + 4.5}" fill="${color}" font-family="'Bricolage Grotesque', sans-serif" font-size="${fontSize}" font-weight="600" text-anchor="start">${text}</text>
     </g>
   `;
 };
 
 /**
  * Renderiza um grupo de badges com quebra de linha e alinhamento.
- *
- * @param items - Lista de nomes de tecnologia.
- * @param color - Cor dos badges.
- * @param maxWidth - Largura máxima disponível.
- * @param align - Alinhamento ("left" ou "right").
- * @returns String SVG com os badges posicionados.
  */
 const renderPills = (
   items: string[],
@@ -46,21 +54,36 @@ const renderPills = (
 ): string => {
   const gapX = 8;
   const gapY = 10;
-  const lines: { width: number; pills: { x: number; svg: string }[] }[] = [];
-  let currentLine = { width: 0, pills: [] as { x: number; svg: string }[] };
+  const lines: {
+    width: number;
+    pills: { x: number; width: number; svg: string }[];
+  }[] = [];
+  let currentLine = {
+    width: 0,
+    pills: [] as { x: number; width: number; svg: string }[],
+  };
 
   items.forEach((item) => {
     const pillText = item.trim();
     if (!pillText) return;
 
-    const width = measureText(pillText, 12) + 20;
+    const normText = pillText.toLowerCase().replace(/\s+/g, "");
+    const hasIcon = !!(
+      brandIcons[normText] || brandIcons[pillText.toLowerCase()]
+    );
+    const width = measureText(pillText, 12) + 20 + (hasIcon ? 20 : 0);
+
     if (currentLine.width + width > maxWidth && currentLine.pills.length > 0) {
       lines.push(currentLine);
-      currentLine = { width: 0, pills: [] as { x: number; svg: string }[] };
+      currentLine = {
+        width: 0,
+        pills: [] as { x: number; width: number; svg: string }[],
+      };
     }
 
     currentLine.pills.push({
       x: currentLine.width,
+      width,
       svg: renderPill(pillText, color),
     });
     currentLine.width += width + gapX;
@@ -69,8 +92,8 @@ const renderPills = (
 
   return lines
     .map((line, lineIdx) => {
-      const lineY = lineIdx * (22 + gapY);
-      const offsetX = align === "right" ? maxWidth - line.width + gapX : 0;
+      const lineY = lineIdx * (24 + gapY);
+      const offsetX = align === "right" ? maxWidth - (line.width - gapX) : 0;
       return line.pills
         .map(
           (pill) =>
@@ -85,29 +108,31 @@ const renderPills = (
 
 /**
  * Renderiza um card de Tech Stack com duas colunas.
- *
- * @param options - Opções de personalização.
- * @returns String SVG do card.
  */
 const renderStackCard = (options: Partial<StackCardOptions> = {}): string => {
   const {
-    title = "Tech Stack",
+    title = "",
     left_title = "Front-end",
     left_items = "",
     right_title = "Back-end",
     right_items = "",
     card_width = 495,
-    title_color,
+    title_color = "ffffff",
     bg_color = "00000000",
     theme,
     border_radius,
     border_color,
     hide_border = true,
-    hide_title = false,
+    hide_title = true,
   } = options;
 
+  // Corrige cores brancas se necessário
+  let resolvedTitleColor = title_color;
+  if (resolvedTitleColor.length > 6)
+    resolvedTitleColor = resolvedTitleColor.substring(0, 6);
+
   const { titleColor, bgColor, borderColor } = getCardColors({
-    title_color,
+    title_color: resolvedTitleColor,
     bg_color,
     border_color,
     theme,
@@ -115,7 +140,7 @@ const renderStackCard = (options: Partial<StackCardOptions> = {}): string => {
   });
 
   const paddingX = 25;
-  const columnWidth = (card_width - paddingX * 2.5) / 2;
+  const columnWidth = (card_width - paddingX * 3) / 2;
 
   const leftItemsList = left_items.split(",").filter(Boolean);
   const rightItemsList = right_items.split(",").filter(Boolean);
@@ -125,20 +150,27 @@ const renderStackCard = (options: Partial<StackCardOptions> = {}): string => {
     let x = 0;
     let lines = 1;
     items.forEach((item) => {
-      const w = measureText(item.trim(), 12) + 20;
+      const pillText = item.trim();
+      const normText = pillText.toLowerCase().replace(/\s+/g, "");
+      const hasIcon = !!(
+        brandIcons[normText] || brandIcons[pillText.toLowerCase()]
+      );
+      const w = measureText(pillText, 12) + 20 + (hasIcon ? 20 : 0);
+
       if (x + w > columnWidth) {
         x = 0;
         lines++;
       }
       x += w + 8;
     });
-    return lines * 32;
+    return lines * 34;
   };
 
   const leftHeight = estimateHeight(leftItemsList);
   const rightHeight = estimateHeight(rightItemsList);
   const innerHeight = Math.max(leftHeight, rightHeight) + 40;
-  const height = (hide_title ? 0 : 40) + innerHeight + 40;
+  const topOffset = hide_title ? 0 : 45;
+  const height = topOffset + innerHeight + 20;
 
   const card = new Card({
     width: card_width,
@@ -154,22 +186,22 @@ const renderStackCard = (options: Partial<StackCardOptions> = {}): string => {
   });
 
   card.setHideBorder(hide_border);
-  if (hide_title) card.setHideTitle(true);
+  if (hide_title || !title) card.setHideTitle(true);
 
   const body = `
-    <g transform="translate(${paddingX}, 10)">
+    <g transform="translate(${paddingX}, ${topOffset})">
       <!-- Coluna Esquerda -->
       <g>
-        <text y="0" fill="${titleColor}" font-family="'Bricolage Grotesque', sans-serif" font-size="18" font-weight="700">${left_title}</text>
-        <g transform="translate(0, 15)">
+        <text y="0" fill="${titleColor}" font-family="'Bricolage Grotesque', sans-serif" font-size="20" font-weight="700">${left_title}</text>
+        <g transform="translate(0, 20)">
           ${renderPills(leftItemsList, titleColor, columnWidth, "left")}
         </g>
       </g>
 
       <!-- Coluna Direita (Pinned to far right) -->
       <g transform="translate(${card_width - paddingX * 2}, 0)">
-        <text y="0" fill="${titleColor}" font-family="'Bricolage Grotesque', sans-serif" font-size="18" font-weight="700" text-anchor="end">${right_title}</text>
-        <g transform="translate(${-columnWidth}, 15)">
+        <text y="0" fill="${titleColor}" font-family="'Bricolage Grotesque', sans-serif" font-size="20" font-weight="700" text-anchor="end">${right_title}</text>
+        <g transform="translate(${-columnWidth}, 20)">
           ${renderPills(rightItemsList, titleColor, columnWidth, "right")}
         </g>
       </g>
