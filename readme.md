@@ -30,6 +30,8 @@ Aqui estão alguns exemplos reais dos cartões que você pode gerar e adicionar 
 
 Mostra um resumo da sua conta: total de estrelas recebidas, commits realizados neste ano, PRs, issues enviadas e contribuições em outros repositórios.
 
+[![Estatísticas do GitHub](https://estaticasreadme.vercel.app/api?username=ramonsantos9&font_family=Bricolage+Grotesque&locale=pt-br&title_color=FB8C00&icon_color=FB8C00&show_icons=true&v=2)](https://github.com/ramonsantos9)
+
 ```markdown
 [![Estatísticas do GitHub](https://estaticasreadme.vercel.app/api?username=ramonsantos9&font_family=Bricolage+Grotesque&locale=pt-br&title_color=FB8C00&icon_color=FB8C00&show_icons=true&v=2)](https://github.com/ramonsantos9)
 ```
@@ -37,6 +39,8 @@ Mostra um resumo da sua conta: total de estrelas recebidas, commits realizados n
 ### 2. Ofensiva de Commits (Streak)
 
 Incentiva a consistência mostrando o total de contribuições em dias consecutivos.
+
+[![Streak Stats](https://estaticasreadme.vercel.app/api/streak?username=ramonsantos9&font_family=Bricolage+Grotesque&locale=pt-br&title_color=FB8C00&icon_color=FB8C00&hide_border=true&v=2)](https://github.com/ramonsantos9)
 
 ```markdown
 [![Streak Stats](https://estaticasreadme.vercel.app/api/streak?username=ramonsantos9&font_family=Bricolage+Grotesque&locale=pt-br&title_color=FB8C00&icon_color=FB8C00&hide_border=true&v=2)](https://github.com/ramonsantos9)
@@ -46,6 +50,8 @@ Incentiva a consistência mostrando o total de contribuições em dias consecuti
 
 Um gráfico atualizado dinamicamente que exibe as linguagens de programação que você mais utiliza em seus repositórios.
 
+[![Principais Langs](https://estaticasreadme.vercel.app/api/top-langs?username=ramonsantos9&font_family=Bricolage+Grotesque&locale=pt-br&layout=donut&langs_count=5&title_color=FB8C00&icon_color=FB8C00&v=2)](https://github.com/ramonsantos9)
+
 ```markdown
 [![Principais Langs](https://estaticasreadme.vercel.app/api/top-langs?username=ramonsantos9&font_family=Bricolage+Grotesque&locale=pt-br&layout=donut&langs_count=5&title_color=FB8C00&icon_color=FB8C00&v=2)](https://github.com/ramonsantos9)
 ```
@@ -54,6 +60,8 @@ Um gráfico atualizado dinamicamente que exibe as linguagens de programação qu
 
 Mostra o seu tempo total ou semanal gasto codificando em cada linguagem, puxando os dados diretamente da sua integração com o WakaTime.
 
+[![WakaTime](https://estaticasreadme.vercel.app/api/wakatime?username=ramonsantos9&font_family=Bricolage+Grotesque&locale=pt-br&title_color=FB8C00&icon_color=FB8C00&v=2)](https://github.com/ramonsantos9)
+
 ```markdown
 [![WakaTime](https://estaticasreadme.vercel.app/api/wakatime?username=ramonsantos9&font_family=Bricolage+Grotesque&locale=pt-br&title_color=FB8C00&icon_color=FB8C00&v=2)](https://github.com/ramonsantos9)
 ```
@@ -61,6 +69,8 @@ Mostra o seu tempo total ou semanal gasto codificando em cada linguagem, puxando
 ### 5. Cards de Stack (Tecnologias)
 
 Exibe uma grade limpa e responsiva das tecnologias e ferramentas que você usa.
+
+[![Stack Card](https://estaticasreadme.vercel.app/api/stack?username=ramonsantos9&title_color=FB8C00&icon_color=FB8C00&v=2)](https://github.com/ramonsantos9/github-readme-stats)
 
 ```markdown
 [![Stack Card](https://estaticasreadme.vercel.app/api/stack?username=ramonsantos9&title_color=FB8C00&icon_color=FB8C00&v=2)](https://github.com/ramonsantos9/github-readme-stats)
